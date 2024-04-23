@@ -12,7 +12,7 @@ from copy import deepcopy
 
 import pygame
 from pygame.locals import RLEACCEL
-import utils
+# import utils
 import os
 os.environ["SDL_VIDEODRIVER"] = "dummy"
 

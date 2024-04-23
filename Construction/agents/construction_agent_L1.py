@@ -1,7 +1,7 @@
 import pdb
 import pickle
 import torch
-import test_reasoning_about_L0
+import test_reasoning_about_construction_L0
 import envs.construction as construction
 import random
 import numpy as np

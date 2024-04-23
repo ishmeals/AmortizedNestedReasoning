@@ -191,7 +191,7 @@ def main(args, rank=0):
 		BIG_STORAGE_DIR = "/scratch2/weka/tenenbaum/kunaljha/ReReason/RecursiveReasoning"
 		save_dir = f"{BIG_STORAGE_DIR}/{save_dir}"
 	else:
-		BIG_STORAGE_DIR = ""
+		BIG_STORAGE_DIR = "."
 
 	p = Path(save_dir)
 	if not p.is_dir():
