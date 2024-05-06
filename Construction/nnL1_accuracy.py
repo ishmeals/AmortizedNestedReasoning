@@ -119,21 +119,21 @@ num_train_data = 175
 num_test_data = int(0.2 * num_train_data)
 last = 0
 
-BIG_STORAGE_DIR = "/scratch2/weka/tenenbaum/kunaljha/ReReason/RecursiveReasoning"
+BIG_STORAGE_DIR = "./"
 
 
 # load in models for inference
-L0_model_dir = "/save/construction/30.0kDat_smallerModel_128dim_128chan_0.0001lr_128bSize/num_colored_block_locations=10,num_possible_block_pairs=45,beta=0.01/"
-model_dir_list = [L0_model_dir]
-for pct in [2,5,10]:
-	model_dir_list.append(f"/save/construction/60.0kDat_L0_KLLess_{pct}_pct_128dim_128chan_0.0001lr_128bSize/num_colored_block_locations=10,num_possible_block_pairs=45,beta=0.01/")
-L0_model_dir = model_dir_list[3]
+L0_model_dir = './save/construction/0.10.1/num_colored_block_locations=10,num_possible_block_pairs=45,beta=0.1/'
+
+#model_dir_list = [L0_model_dir]
+#for pct in [2,5,10]:
+#	model_dir_list.append(f"/save/construction/60.0kDat_L0_KLLess_{pct}_pct_128dim_128chan_0.0001lr_128bSize/num_colored_block_locations=10,num_possible_block_pairs=45,beta=0.01/")
 
 L0_model_path = BIG_STORAGE_DIR + L0_model_dir + "checkpoints/best_acc.pik"
 L0_inference_model, L0_optimizer, L0_stats, L0_args = train_construction_desire_pred.load_checkpoint(L0_model_path, device)
 L0_inference_model.eval()
 
-L1_model_dir = "/save/construction/1.02kDat_L1dataGen5L22_128dim_128chan_0.0001lr_128bSize/num_colored_block_locations=10,num_possible_block_pairs=45,beta=0.01/"
+L1_model_dir = './save/construction/0.10.11/num_colored_block_locations=10,num_possible_block_pairs=45,beta=0.1/'
 
 # model_dir_list = [L1_model_dir]
 # for pct in [2, 5, 10]:
@@ -146,7 +146,7 @@ L1_inference_model, L1_optimizer, L1_stats, L1_args = train_construction_desire_
 L1_inference_model.eval()
 
 
-L1_nll_model_dir = "/save/construction/1.02kDat_nllLoss128dim_128chan_0.0001lr_128bSize/num_colored_block_locations=10,num_possible_block_pairs=45,beta=0.01/"
+L1_nll_model_dir = './save/construction/0.10.11/num_colored_block_locations=10,num_possible_block_pairs=45,beta=0.1/'
 L1_nll_model_path = BIG_STORAGE_DIR + L1_nll_model_dir + "checkpoints/best_acc.pik"
 cross_ent_model, cross_ent_optimizer, cross_ent_stats, cross_ent_args = train_construction_desire_pred.load_checkpoint(L1_nll_model_path, device, L1=True)
 cross_ent_model.eval()
@@ -308,7 +308,7 @@ if __name__ == "__main__":
 
 	print(f"Tuning for L0 beta {beta_L0} L1 beta {beta_L1}")
 	total_data = len(test_dataloader) - 40
-	for epoch in tqdm.tqdm(range(1)):
+	for epoch in (range(1)):
 		# print(f"\n-----\nEpoch {epoch}")
 
 

@@ -471,7 +471,7 @@ def L1_particle_inference(
 
 
 
-	for timestep in tqdm.tqdm(range(1, num_timesteps)):
+	for timestep in (range(1, num_timesteps)):
 	# for timestep in tqdm.tqdm(range(1, 4)):
 		if seek_conflict_proposal_probss is None:
 			seek_conflict_proposal_probs = None

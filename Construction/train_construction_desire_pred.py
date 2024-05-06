@@ -51,16 +51,17 @@ def get_args_parser():
 	parser.add_argument("--num-rows", type=int, default=20, help="Height of the map")
 	parser.add_argument("--num-cols", type=int, default=20, help="Width of the map")
 	parser.add_argument("--action-size", type=int, default=6, help="Action space size")
-	parser.add_argument("--num-channels", type=int, default=128, help="Number of channels in CNN")
-	parser.add_argument("--hidden-dim", type=int, default=128, help="Hidden dimension")
-	parser.add_argument("--num-data-train", type=int, default=10000, help="Training set size")
-	parser.add_argument("--num-data-test", type=int, default=2000, help="Testing set size")
+	parser.add_argument("--num-channels", type=int, default=4, help="Number of channels in CNN")
+	parser.add_argument("--hidden-dim", type=int, default=4, help="Hidden dimension")
+	parser.add_argument("--num-data-train", type=int, default=100, help="Training set size")
+	parser.add_argument("--num-data-test", type=int, default=20, help="Testing set size")
 	parser.add_argument("--batch-size", type=int, default=32, help="Batch size")
 	parser.add_argument("--num-epochs", type=int, default=300, help="Number of epochs")
 	parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate")
 	parser.add_argument("--model-type", type=str, default="ToMnet_DesirePred", help="Model type")
 	parser.add_argument("--last", type=int, default=1, help="Only output last prediction")
 	parser.add_argument("--beta", type=float, default=0.01, help="How deterministic is the policy")
+	parser.add_argument("--beta1", type=float, default=0.01, help="How deterministic is the policy")
 	parser.add_argument("--num-samples", type=int, default=5, help="How many particles are sampled in L0 IS_inference")
 	parser.add_argument("--num-samples-L2", type=int, default=2, help="How many particles are sampled in L1 IS_inference")
 	# parser.add_argument("--useBFS", type=bool, default=0, help="Use heuristic plan or BFS")
@@ -272,7 +273,7 @@ def main(args, rank=0):
 			num_possible_block_pairs=args.num_possible_block_pairs,
 			num_rows=args.num_rows,
 			num_cols=args.num_cols,
-			beta=args.beta,
+			beta=args.beta1,
 			utility_mode=args.utility_mode,
 			num_data=num_train_data,
 			dataset_dir=dataset_dir,
@@ -294,7 +295,7 @@ def main(args, rank=0):
 			num_possible_block_pairs=args.num_possible_block_pairs,
 			num_rows=args.num_rows,
 			num_cols=args.num_cols,
-			beta=args.beta,
+			beta=args.beta1,
 			utility_mode=args.utility_mode,
 			num_data=args.num_data_test,
 			dataset_dir=dataset_dir,
@@ -366,7 +367,7 @@ def main(args, rank=0):
 	best_acc = 0
 	min_loss = float("inf")
 	min_action_loss = float("inf")
-	for epoch_id in tqdm.tqdm(range(args.num_epochs)):
+	for epoch_id in (range(args.num_epochs)):
 		# train_dataloader.sampler.set_epoch(epoch_id)  # done to have shuffling in multiprocessing
 
 		# if epoch_id < 30:
@@ -396,7 +397,7 @@ def main(args, rank=0):
 			# else:
 			# 	data_considered += len(batch[0])
 			# t1 = time.time()
-			print(f"Doing batch {batch_id+1} / {trainBatchLen}")
+			# print(f"Doing batch {batch_id+1} / {trainBatchLen}")
 			states, actions, desires, IS_inference, final_avg_accuracy = batch[0], batch[1], batch[2], batch[3], batch[4] # extract precomputed GT IS inference
 			exact_final_accuracy += final_avg_accuracy
 
@@ -413,7 +414,7 @@ def main(args, rank=0):
 			with torch.cuda.amp.autocast():
 				log_prob = model(states, actions_2d, lens, last=args.last)  # the final inference prediction for the model
 				# loss = NLL_loss(log_prob, desires)
-				loss = kl_loss(log_prob, torch.tensor(IS_inference).to(log_prob.dtype).to(rank))
+				loss = kl_loss(log_prob, torch.tensor(IS_inference).to(log_prob.dtype))
 			# t2 = time.time()
 			# print(f"Time to predict = {t2 - t1} seconds")
 			# action_model_desires = []
@@ -484,10 +485,10 @@ def main(args, rank=0):
 			# print(f"Time to calculate loss = {t2 - t1} seconds")
 
 			# if loss.item() < min_loss:
-			#     min_loss = loss.item()
-			#     save_checkpoint(f"{save_dir}/checkpoints/best_acc.pik", model, optimizer, stats, args)
-			#     if accuracy <= 0.6:
-			#         save_checkpoint(f"{save_dir}/checkpoints/sixty.pik", model, optimizer, stats, args)
+			#	 min_loss = loss.item()
+			#	 save_checkpoint(f"{save_dir}/checkpoints/best_acc.pik", model, optimizer, stats, args)
+			#	 if accuracy <= 0.6:
+			#		 save_checkpoint(f"{save_dir}/checkpoints/sixty.pik", model, optimizer, stats, args)
 
 			# t1 = time.time()
 			pred = log_prob.argmax(-1)
@@ -524,7 +525,7 @@ def main(args, rank=0):
 		
 		assert accuracy <= 1.0, "Training accuracy is greater than 1"
 		# if overThreshold > 0.8:
-		#     sys.exit("Model suspiciously predicts correct ground truth utility at too high of a percentage")
+		#	 sys.exit("Model suspiciously predicts correct ground truth utility at too high of a percentage")
 		
 		stats["exact_final_train_accuracy"].append(exact_final_accuracy)
 		try:
@@ -595,7 +596,7 @@ def main(args, rank=0):
 			with torch.cuda.amp.autocast():
 				log_prob = model(states, actions_2d, lens, last=args.last)  # the final inference prediction for the model
 				# loss = NLL_loss(log_prob, desires)
-				loss = kl_loss(log_prob, torch.tensor(IS_inference).to(log_prob.dtype).to(rank))
+				loss = kl_loss(log_prob, torch.tensor(IS_inference).to(log_prob.dtype))
 
 			# for i in range(len(log_prob)):
 			# 	nn_pred_distrib = np.exp(log_prob[i].cpu().detach().numpy())

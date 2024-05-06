@@ -31,7 +31,7 @@ def sample_L0_rollout(env, beta=0.1, useBFS=False):
 
     # rollout.append((action, state, obs, reward))
     # while not done:
-    for timestep in tqdm(range(time_limit)):
+    for timestep in (range(time_limit)):
         # start_time = time.time()
         action = agent.get_action(obs, useBFS=useBFS)  # use bfs for actual actions and heuristic for inference
         # if time.time() - start_time > 5:

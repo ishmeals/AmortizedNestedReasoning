@@ -496,7 +496,7 @@ def particle_inference(
 			if start_time is None:  # otherwise we update from beginning
 				start_time = 1
 
-			for timestep in tqdm.tqdm(range(start_time, num_timesteps)):  # only update a single particle from where it left off
+			for timestep in (range(start_time, num_timesteps)):  # only update a single particle from where it left off
 				if colored_block_utilities_proposal_probss is None:
 					colored_block_utilities_proposal_probs = None
 				else:
@@ -534,7 +534,7 @@ def particle_inference(
 			return (colored_block_utilitiess, beliefss, env_clones, agent_clones), log_weights[:, -1]
 
 
-	for timestep in tqdm.tqdm(range(1, num_timesteps)):
+	for timestep in (range(1, num_timesteps)):
 		if colored_block_utilities_proposal_probss is None:
 			colored_block_utilities_proposal_probs = None
 		else:
